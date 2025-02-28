@@ -1,0 +1,20 @@
+---
+#------------------------------------------------------------------------------
+# Service
+#------------------------------------------------------------------------------
+apiVersion: v1
+kind: Service
+metadata:
+  name: show-and-tell
+  labels:
+    app.kubernetes.io/name: show-and-tell
+    app.kubernetes.io/part-of: show-and-tell
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 8080
+  selector:
+    app.kubernetes.io/name: show-and-tell

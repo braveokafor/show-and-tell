@@ -1,0 +1,83 @@
+---
+#------------------------------------------------------------------------------
+# Cluster
+#------------------------------------------------------------------------------
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: show-and-tell
+  annotations:
+    cnpg.io/hibernation: "off"
+spec:
+  description: "'Show And Tell' PostgreSQL Cluster"
+  imageName: ghcr.io/cloudnative-pg/postgresql:17.4-2
+  enableSuperuserAccess: false
+  instances: 1
+  enablePDB: false
+  startDelay: 300
+  primaryUpdateStrategy: unsupervised
+  postgresql:
+    pg_hba:
+      - host all all 0.0.0.0/0 md5
+  bootstrap:
+    initdb:
+      database: show_and_tell
+      owner: show_and_tell
+      postInitApplicationSQL:
+        - |
+          CREATE TABLE
+              IF NOT EXISTS sessions (
+                  id SERIAL PRIMARY KEY,
+                  time_slot TIMESTAMP NOT NULL,
+                  team VARCHAR(100) NOT NULL,
+                  topic VARCHAR(255) NOT NULL DEFAULT '',
+                  presenter VARCHAR(100) NOT NULL DEFAULT ''
+              );
+          GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO show_and_tell;
+          GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO show_and_tell;
+  storage:
+    size: 1Gi
+  resources:
+    requests:
+      memory: "1Gi"
+      cpu: "1000m"
+    limits:
+      memory: "1Gi"
+      cpu: "1000m"
+  managed:
+    services:
+      disabledDefaultServices: ["ro", "r"] # We don't have any read replicas
+
+  backup:
+    volumeSnapshot:
+      online: true
+    retentionPolicy: "7d"
+
+  affinity:
+    enablePodAntiAffinity: true
+    topologyKey: topology.kubernetes.io/zone
+    podAntiAffinityType: preferred
+#    nodeSelector:
+#      app: show-and-tell
+#    tolerations:
+#      - key: app
+#        value: show-and-tell
+#        operator: Equal
+#        effect: NoExecute
+
+#------------------------------------------------------------------------------
+# BACKUP SCHEDULE
+#------------------------------------------------------------------------------
+---
+#apiVersion: postgresql.cnpg.io/v1
+#kind: ScheduledBackup
+#metadata:
+#  name: show-and-tell
+#spec:
+#  schedule: "0 0 0 * * *" # 00:00 UTC daily
+#  backupOwnerReference: self
+#  method: volumeSnapshot
+#  immediate: true
+#  target: prefer-standby
+#  cluster:
+#    name: show-and-tell

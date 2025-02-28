@@ -1,0 +1,101 @@
+---
+#------------------------------------------------------------------------------
+# Deployment
+#------------------------------------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: show-and-tell
+  labels:
+    app.kubernetes.io/name: show-and-tell
+    app.kubernetes.io/part-of: show-and-tell
+spec:
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: show-and-tell
+      app.kubernetes.io/part-of: show-and-tell
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: show-and-tell
+        app.kubernetes.io/part-of: show-and-tell
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: show-and-tell
+          image: "ghcr.io/braveokafor/show-and-tell:v0.0.7"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: PORT
+              value: "8080"
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  key: uri
+                  name: show-and-tell-app
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            initialDelaySeconds: 10
+            timeoutSeconds: 1
+            periodSeconds: 1
+            failureThreshold: 1
+            httpGet:
+              path: /health
+              port: http
+          readinessProbe:
+            initialDelaySeconds: 10
+            timeoutSeconds: 10
+            periodSeconds: 10
+            failureThreshold: 3
+            httpGet:
+              path: /health
+              port: http
+          startupProbe:
+            initialDelaySeconds: 10
+            timeoutSeconds: 10
+            periodSeconds: 10
+            failureThreshold: 3
+            httpGet:
+              path: /health
+              port: http
+          resources:
+            requests:
+              cpu: "125m"
+              memory: 128Mi
+            limits:
+              cpu: "250m"
+              memory: 256Mi
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop:
+                - ALL
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app.kubernetes.io/name
+                      operator: In
+                      values:
+                        - show-and-tell
+                topologyKey: topology.kubernetes.io/zone
+              weight: 100
+#      nodeSelector:
+#        app: show-and-tell
+#      tolerations:
+#        - key: app
+#          value: show-and-tell
+#          operator: Equal
+#          effect: NoExecute
+#      dnsPolicy: ClusterFirst
