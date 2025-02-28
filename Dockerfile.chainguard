@@ -6,4 +6,4 @@ USER nobody
 
 COPY show-and-tell /usr/local/bin/show-and-tell
 
-ENTRYPOINT ["./show-and-tell"]
+ENTRYPOINT ["show-and-tell"]
