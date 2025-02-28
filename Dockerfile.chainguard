@@ -2,8 +2,10 @@
 # checkov:skip=CKV_DOCKER_2: "Ensure that HEALTHCHECK instructions have been added to container images"
 FROM cgr.dev/chainguard/static:latest
 
-USER nobody
-
 COPY show-and-tell /usr/local/bin/show-and-tell
+COPY ui ./ui
+
+USER nobody
+EXPOSE 8080
 
 ENTRYPOINT ["show-and-tell"]
