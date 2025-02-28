@@ -12,7 +12,7 @@ spec:
   description: "'Show And Tell' PostgreSQL Cluster"
   imageName: ghcr.io/cloudnative-pg/postgresql:17.4-2
   enableSuperuserAccess: false
-  instances: 1
+  instances: 3
   enablePDB: false
   startDelay: 300
   primaryUpdateStrategy: unsupervised

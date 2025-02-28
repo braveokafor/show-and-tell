@@ -30,16 +30,16 @@ builds:
     gcflags:
       - "all=-m=0 -l=2 -dwarf=false"
 
-#upx:
-#  - enabled: true
-#    goos:
-#      - linux
-#    goarch:
-#      - arm64
-#      - amd64
-#    compress: best
-#    lzma: true
-#    brute: true
+upx:
+  - enabled: true
+    goos:
+      - linux
+    goarch:
+      - arm64
+      - amd64
+    compress: best
+    lzma: true
+    brute: true
 
 dockers:
   - image_templates:

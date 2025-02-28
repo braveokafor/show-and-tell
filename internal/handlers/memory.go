@@ -18,8 +18,8 @@ func (h *Handler) allocateMemory(w http.ResponseWriter, r *http.Request) {
 	memoryMutex.Lock()
 	defer memoryMutex.Unlock()
 
-	// Allocate 100MB of memory each time
-	chunkSize := 100 * 1024 * 1024 // 100MB
+	// Allocate 10MB of memory each time
+	chunkSize := 10 * 1024 * 1024 // 10MB
 
 	// Create a new chunk and fill it with data
 	newChunk := make([]byte, chunkSize)
@@ -29,7 +29,7 @@ func (h *Handler) allocateMemory(w http.ResponseWriter, r *http.Request) {
 
 	// Add to our slice of memory chunks
 	memoryHog = append(memoryHog, newChunk)
-	totalAllocMB += 100
+	totalAllocMB += 10
 
 	// Return status
 	w.Header().Set("Content-Type", "text/plain")
