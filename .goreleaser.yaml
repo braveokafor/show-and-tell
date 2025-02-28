@@ -7,7 +7,6 @@ before:
   hooks:
     - go mod tidy
     - go generate ./...
-    - cp -r ui .
 
 builds:
   - main: ./cmd/server/main.go
@@ -47,6 +46,8 @@ dockers:
       - "ghcr.io/braveokafor/show-and-tell:v{{ .Version }}-amd64"
     dockerfile: Dockerfile.chainguard
     use: buildx
+    extra_files:
+      - ui
     build_flag_templates:
       - --label=org.opencontainers.image.title={{ .ProjectName }}
       - --label=org.opencontainers.image.description={{ .ProjectName }}
@@ -61,6 +62,8 @@ dockers:
       - "ghcr.io/braveokafor/show-and-tell:v{{ .Version }}-arm64"
     dockerfile: Dockerfile.chainguard
     use: buildx
+    extra_files:
+      - ui
     build_flag_templates:
       - --label=org.opencontainers.image.title={{ .ProjectName }}
       - --label=org.opencontainers.image.description={{ .ProjectName }}
