@@ -44,7 +44,7 @@ upx:
 dockers:
   - image_templates:
       - "ghcr.io/braveokafor/show-and-tell:v{{ .Version }}-amd64"
-    dockerfile: Dockerfile
+    dockerfile: Dockerfile.chainguard
     use: buildx
     build_flag_templates:
       - --label=org.opencontainers.image.title={{ .ProjectName }}
@@ -58,7 +58,7 @@ dockers:
       - --platform=linux/amd64
   - image_templates:
       - "ghcr.io/braveokafor/show-and-tell:v{{ .Version }}-arm64"
-    dockerfile: Dockerfile
+    dockerfile: Dockerfile.chainguard
     use: buildx
     build_flag_templates:
       - --label=org.opencontainers.image.title={{ .ProjectName }}
